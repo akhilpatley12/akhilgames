@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Timepass Games</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Akhil and Rajkapoor's Fun Games</h1>
+    </header>
+
+    <main>
+        <section id="homepage-banner">
+            <!-- Main Banner Photo -->
+            <img id="homepage-photo" src="" alt="" style="display: none;">
+            
+            <!-- Secondary Profile Photo -->
+            <div id="secondary-photo-container" style="display: none;">
+                <img id="secondary-photo" src="" alt="">
+            </div>
+
+            <p id="welcome-text">Upload your photos using the admin panel.</p>
+        </section>
+
+        <section id="admin-upload-section" style="display: none;">
+            <h2>Admin Control Panel</h2>
+            
+            <div class="upload-control" id="upload-control-1">
+                <p><strong>Upload Main Banner Photo</strong></p>
+                <input type="file" id="photo-upload-1" accept="image/*">
+                <button id="upload-btn-1">Upload Banner</button>
+            </div>
+            
+            <hr>
+
+            <div class="upload-control" id="upload-control-2">
+                <p><strong>Upload Small Profile Photo</strong></p>
+                <input type="file" id="photo-upload-2" accept="image/*">
+                <button id="upload-btn-2">Upload Profile Photo</button>
+            </div>
+        </section>
+
+        <section id="game-categories">
+            <h2>Game Zone</h2>
+            <div class="category">
+                <h3>Classic Games</h3>
+                <div class="game-grid">
+                    <a href="games/snake.html" class="game-card">
+                        <h4>Snake Game</h4>
+                        <p>The classic snake game.</p>
+                    </a>
+                </div>
+            </div>
+            <div class="category">
+                <h3>Arcade Fun</h3>
+                <div class="game-grid">
+                     <a href="games/whac-a-mole.html" class="game-card">
+                        <h4>Whac-A-Mole</h4>
+                        <p>Test your reflexes!</p>
+                    </a>
+                </div>
+            </div>
+             <div class="category">
+                <h3>Word Games</h3>
+                <div class="game-grid">
+                     <a href="games/hangman.html" class="game-card">
+                        <h4>Hangman</h4>
+                        <p>Guess the secret word.</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Fun Timepass Games. Created for you. | <button id="admin-login-btn" style="background:none; border:none; color:white; text-decoration:underline; cursor:pointer;">Admin</button></p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
