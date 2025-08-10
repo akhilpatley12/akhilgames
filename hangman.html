@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hangman</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #f0f8ff; }
+        .game-container { text-align: center; }
+        #word-display { font-size: 2rem; letter-spacing: 0.5em; margin: 20px 0; }
+        #keyboard { margin-top: 20px; }
+        .key { font-size: 1.2rem; width: 40px; height: 40px; margin: 3px; cursor: pointer; }
+        .key:disabled { background-color: #ccc; cursor: not-allowed; }
+        #status { font-size: 1.2rem; font-weight: bold; margin-top: 15px; }
+        a { margin-top: 15px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Hangman</h1>
+        <p>Guess the secret word!</p>
+        <div id="word-display"></div>
+        <div id="status">Wrong Guesses: 0 / 6</div>
+        <div id="keyboard"></div>
+        <br>
+        <a href="../index.html">Back to Home</a>
+    </div>
+    <script>
+        const words = ['WEBSITE', 'JAVASCRIPT', 'AKHIL', 'GEMINI', 'COMPUTER', 'PYTHON'];
+        const wordDisplay = document.getElementById('word-display');
+        const keyboardDiv = document.getElementById('keyboard');
+        const statusEl = document.getElementById('status');
+
+        let selectedWord = words[Math.floor(Math.random() * words.length)];
+        let guessedLetters = [];
+        let wrongGuesses = 0;
+
+        function displayWord() {
+            wordDisplay.innerHTML = selectedWord
+                .split('')
+                .map(letter => (guessedLetters.includes(letter) ? letter : '_'))
+                .join('');
+            checkWin();
+        }
+
+        function createKeyboard() {
+            for (let i = 65; i <= 90; i++) { // A-Z
+                const letter = String.fromCharCode(i);
+                const button = document.createElement('button');
+                button.textContent = letter;
+                button.classList.add('key');
+                button.addEventListener('click', () => handleGuess(letter));
+                keyboardDiv.appendChild(button);
+            }
+        }
+
+        function handleGuess(letter) {
+            guessedLetters.push(letter);
+            document.querySelectorAll('.key').forEach(btn => {
+                if (btn.textContent === letter) btn.disabled = true;
+            });
+
+            if (!selectedWord.includes(letter)) {
+                wrongGuesses++;
+                statusEl.textContent = `Wrong Guesses: ${wrongGuesses} / 6`;
+            }
+
+            displayWord();
+            checkLoss();
+        }
+
+        function checkWin() {
+            if (!wordDisplay.textContent.includes('_')) {
+                setTimeout(() => {
+                    alert('You won! The word was ' + selectedWord);
+                    resetGame();
+                }, 300);
+            }
+        }
+
+        function checkLoss() {
+            if (wrongGuesses >= 6) {
+                setTimeout(() => {
+                    alert('You lost! The word was ' + selectedWord);
+                    resetGame();
+                }, 300);
+            }
+        }
+
+        function resetGame() {
+            selectedWord = words[Math.floor(Math.random() * words.length)];
+            guessedLetters = [];
+            wrongGuesses = 0;
+            statusEl.textContent = `Wrong Guesses: 0 / 6`;
+            keyboardDiv.innerHTML = '';
+            createKeyboard();
+            displayWord();
+        }
+
+        createKeyboard();
+        displayWord();
+    </script>
+</body>
+</html>

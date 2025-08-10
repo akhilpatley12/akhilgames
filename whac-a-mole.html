@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Whac-A-Mole</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #f0f8ff; }
+        .game-container { text-align: center; }
+        #game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 300px; margin: 20px auto; }
+        .hole { width: 90px; height: 90px; background-color: #a1662f; border-radius: 50%; border: 5px solid #603813; }
+        .hole.mole { background-image: url('https://i.imgur.com/4qH3Y42.png'); background-size: 80%; background-position: center; background-repeat: no-repeat; background-color: #e0a96d; }
+        .info { font-size: 1.5rem; font-weight: bold; margin: 10px 0; }
+        a { margin-top: 15px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Whac-A-Mole</h1>
+        <div class="info">Score: <span id="score">0</span></div>
+        <div class="info">High Score: <span id="high-score">0</span></div>
+        <div class="info">Time Left: <span id="time-left">20</span></div>
+        <div id="game-grid"></div>
+        <br>
+        <a href="../index.html">Back to Home</a>
+    </div>
+    <script>
+        const grid = document.getElementById('game-grid');
+        const scoreEl = document.getElementById('score');
+        const highScoreEl = document.getElementById('high-score');
+        const timeLeftEl = document.getElementById('time-left');
+        const highScoreKey = 'whacHighScore';
+
+        let score = 0;
+        let timeLeft = 20;
+        let molePosition;
+        let timerId = null;
+        let countdownTimerId = null;
+
+        function loadHighScore() {
+            const highScore = localStorage.getItem(highScoreKey) || 0;
+            highScoreEl.textContent = highScore;
+        }
+
+        function updateHighScore() {
+            const currentHighScore = localStorage.getItem(highScoreKey) || 0;
+            if (score > currentHighScore) {
+                localStorage.setItem(highScoreKey, score);
+                highScoreEl.textContent = score;
+            }
+        }
+
+        for (let i = 0; i < 9; i++) {
+            const hole = document.createElement('div');
+            hole.classList.add('hole');
+            hole.id = i;
+            grid.appendChild(hole);
+            hole.addEventListener('mousedown', () => {
+                if (hole.id == molePosition) {
+                    score++;
+                    scoreEl.textContent = score;
+                    molePosition = null;
+                }
+            });
+        }
+
+        function randomMole() {
+            document.querySelectorAll('.hole').forEach(hole => hole.classList.remove('mole'));
+            let randomHole = document.getElementById(Math.floor(Math.random() * 9));
+            randomHole.classList.add('mole');
+            molePosition = randomHole.id;
+        }
+
+        function moveMole() {
+            timerId = setInterval(randomMole, 800);
+        }
+
+        function countdown() {
+            timeLeft--;
+            timeLeftEl.textContent = timeLeft;
+            if (timeLeft < 0) {
+                timeLeft = 0;
+                clearInterval(countdownTimerId);
+                clearInterval(timerId);
+                updateHighScore();
+                alert('Game Over! Your final score is ' + score);
+            }
+        }
+
+        loadHighScore();
+        moveMole();
+        countdownTimerId = setInterval(countdown, 1000);
+    </script>
+</body>
+</html>

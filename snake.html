@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #f0f8ff; }
+        .game-container { text-align: center; }
+        #game-board { border: 3px solid #333; background-color: #a8d5ba; }
+        #score { font-size: 1.5rem; font-weight: bold; margin: 10px 0; }
+        a { margin-top: 15px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Snake Game</h1>
+        <div id="score">Score: 0</div>
+        <div id="high-score" style="font-weight: bold; margin-bottom: 10px;">High Score: 0</div>
+        <canvas id="game-board" width="400" height="400"></canvas>
+        <br>
+        <a href="../index.html">Back to Home</a>
+    </div>
+    <script>
+        const board = document.getElementById('game-board');
+        const context = board.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const highScoreEl = document.getElementById('high-score');
+        const gridSize = 20;
+        const highScoreKey = 'snakeHighScore';
+
+        let snake = [{ x: 10, y: 10 }];
+        let food = {};
+        let direction = 'right';
+        let score = 0;
+        let gameOver = false;
+
+        function loadHighScore() {
+            const highScore = localStorage.getItem(highScoreKey) || 0;
+            highScoreEl.textContent = `High Score: ${highScore}`;
+        }
+
+        function updateHighScore() {
+            const currentHighScore = localStorage.getItem(highScoreKey) || 0;
+            if (score > currentHighScore) {
+                localStorage.setItem(highScoreKey, score);
+                highScoreEl.textContent = `High Score: ${score}`;
+            }
+        }
+
+        function generateFood() {
+            food = {
+                x: Math.floor(Math.random() * (board.width / gridSize)),
+                y: Math.floor(Math.random() * (board.height / gridSize))
+            };
+        }
+
+        function draw() {
+            context.clearRect(0, 0, board.width, board.height);
+            for (let i = 0; i < snake.length; i++) {
+                context.fillStyle = i === 0 ? '#333' : '#555';
+                context.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize, gridSize);
+            }
+            context.fillStyle = '#d9534f';
+            context.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+        }
+
+        function update() {
+            if (gameOver) return;
+            const head = { x: snake[0].x, y: snake[0].y };
+            if (direction === 'right') head.x++;
+            if (direction === 'left') head.x--;
+            if (direction === 'up') head.y--;
+            if (direction === 'down') head.y++;
+
+            if (head.x < 0 || head.x * gridSize >= board.width || head.y < 0 || head.y * gridSize >= board.height || checkCollision(head)) {
+                gameOver = true;
+                updateHighScore();
+                alert('Game Over! Your score: ' + score);
+                // Optional: reset game after game over
+                // snake = [{ x: 10, y: 10 }];
+                // score = 0;
+                // direction = 'right';
+                // gameOver = false;
+                return;
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                scoreEl.textContent = 'Score: ' + score;
+                generateFood();
+            } else {
+                snake.pop();
+            }
+            draw();
+        }
+
+        function checkCollision(head) {
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowUp' && direction !== 'down') direction = 'up';
+            if (e.key === 'ArrowDown' && direction !== 'up') direction = 'down';
+            if (e.key === 'ArrowLeft' && direction !== 'right') direction = 'left';
+            if (e.key === 'ArrowRight' && direction !== 'left') direction = 'right';
+        });
+
+        loadHighScore();
+        generateFood();
+        setInterval(update, 150);
+    </script>
+</body>
+</html>

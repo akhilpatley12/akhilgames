@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Memory Match Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            background-color: #f0f8ff;
+        }
+        .game-container {
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 320px;
+            height: 320px;
+            margin: 20px auto;
+        }
+        .card {
+            background-color: #feb47b;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        .card.flipped, .card.matched {
+            transform: rotateY(180deg);
+            background-color: #9be_M_e;
+        }
+        .card .card-face {
+            position: absolute;
+            backface-visibility: hidden;
+        }
+        .card .card-back {
+            transform: rotateY(180deg);
+        }
+        #status {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        a { color: #007bff; text-decoration: none; margin-top: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Memory Match</h1>
+        <div id="status">Moves: 0</div>
+        <div class="memory-grid" id="memory-grid"></div>
+        <a href="../index.html">Back to Home</a>
+    </div>
+
+    <script>
+        const grid = document.getElementById('memory-grid');
+        const statusDiv = document.getElementById('status');
+        const emojis = ['😀', '😀', '🚀', '🚀', '🦊', '🦊', '🎉', '🎉', '🎈', '🎈', '🌟', '🌟', '🍕', '🍕', '⚽', '⚽'];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+
+        function shuffle(array) {
+            array.sort(() => 0.5 - Math.random());
+        }
+
+        function createBoard() {
+            shuffle(emojis);
+            grid.innerHTML = '';
+            matchedPairs = 0;
+            moves = 0;
+            statusDiv.textContent = `Moves: 0`;
+            emojis.forEach(emoji => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.emoji = emoji;
+
+                const cardFront = document.createElement('div');
+                cardFront.classList.add('card-face', 'card-front');
+
+                const cardBack = document.createElement('div');
+                cardBack.classList.add('card-face', 'card-back');
+                cardBack.textContent = emoji;
+
+                card.appendChild(cardFront);
+                card.appendChild(cardBack);
+
+                card.addEventListener('click', flipCard);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (flippedCards.length === 2 || this.classList.contains('flipped')) {
+                return;
+            }
+            this.classList.add('flipped');
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                moves++;
+                statusDiv.textContent = `Moves: ${moves}`;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            const [card1, card2] = flippedCards;
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                flippedCards = [];
+                if (matchedPairs === emojis.length / 2) {
+                    setTimeout(() => {
+                        alert(`You won in ${moves} moves!`);
+                        createBoard();
+                    }, 500);
+                }
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
